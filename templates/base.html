@@ -1,14 +1,17 @@
-<!DOCTYPE html>
 {% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base</title>
+    <title>{% if title %} {{title}} {% else %} Blog {% endif %}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
 </head>
 <body>
     {% bootstrap_css %}
-    <h1>Base</h1>
+        {% block content %}
+        {% endblock %}
     {% bootstrap_javascript %}
 </body>
 </html>
