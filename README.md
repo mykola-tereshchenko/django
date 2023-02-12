@@ -8,3 +8,14 @@ To run this application:
 ```
 python manage.py runserver
 ```
+## Migration
+```
+python manage.py makemigrations
+python manage.py sqlmigrate blog 0001
+python manage.py migrate
+python manage.py showmigrations
+```
+## Super user
+```
+python manage.py createsuperuser
+```
