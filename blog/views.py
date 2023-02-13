@@ -5,31 +5,24 @@ from .models import Post
 from .forms import PostForm
 
 
-def index(request):
-    posts = Post.objects.all()
-    context = {'posts': posts}
-    return render(request, 'index.html', context)
-
-
 @login_required
-def create_post(request):
+def delete_post(request, id):
+    queryset = Post.objects.filter(author=request.user)
+    post = get_object_or_404(queryset, pk=id)
+    context = {'post': post}
+
     if request.method == 'GET':
-        context = {'form': PostForm()}
-        return render(request, 'post_form.html', context)
+        return render(request, 'post_confirm_delete.html', context)
     elif request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'The post has been created successfully.')
-            return redirect('posts')
-        else:
-            messages.error(request, 'Please correct the following errors:')
-            return render(request, 'post_form.html', {'form': form})
+        post.delete()
+        messages.success(request, 'The post has been deleted successfully.')
+        return redirect('posts')
 
 
 @login_required
 def edit_post(request, id):
-    post = get_object_or_404(Post, id=id)
+    queryset = Post.objects.filter(author=request.user)
+    post = get_object_or_404(queryset, pk=id)
 
     if request.method == 'GET':
         context = {'form': PostForm(instance=post), 'id': id}
@@ -47,16 +40,27 @@ def edit_post(request, id):
 
 
 @login_required
-def delete_post(request, id):
-    post = get_object_or_404(Post, pk=id)
-    context = {'post': post}
-
+def create_post(request):
     if request.method == 'GET':
-        return render(request, 'post_confirm_delete.html', context)
+        context = {'form': PostForm()}
+        return render(request, 'post_form.html', context)
     elif request.method == 'POST':
-        post.delete()
-        messages.success(request, 'The post has been deleted successfully.')
-        return redirect('posts')
+        form = PostForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.author = request.user
+            user.save()
+            messages.success(request, 'The post has been created successfully.')
+            return redirect('posts')
+        else:
+            messages.error(request, 'Please correct the following errors:')
+            return render(request, 'post_form.html', {'form': form})
+
+
+def index(request):
+    posts = Post.objects.all()
+    context = {'posts': posts}
+    return render(request, 'index.html', context)
 
 
 def about(request):
