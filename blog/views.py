@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .models import Post
 from .forms import PostForm
 
@@ -10,6 +11,7 @@ def index(request):
     return render(request, 'index.html', context)
 
 
+@login_required
 def create_post(request):
     if request.method == 'GET':
         context = {'form': PostForm()}
@@ -25,6 +27,7 @@ def create_post(request):
             return render(request, 'post_form.html', {'form': form})
 
 
+@login_required
 def edit_post(request, id):
     post = get_object_or_404(Post, id=id)
 
@@ -43,6 +46,7 @@ def edit_post(request, id):
             return render(request, 'post_form.html', {'form': form})
 
 
+@login_required
 def delete_post(request, id):
     post = get_object_or_404(Post, pk=id)
     context = {'post': post}
